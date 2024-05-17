@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, flash, redirect, url_for
+from flask import Blueprint, render_template, flash, redirect, url_for, request
 from flask_login import login_required
 
-from src.forms.categoria import NovoCategoriaForm
+from src.forms.categoria import NovoCategoriaForm, EditCategoriaForm
 from src.modules import db
 from src.models.categoria import Categoria
 import sqlalchemy as sa
@@ -32,6 +32,44 @@ def add():
         flash(f"Categoria '{form.nome.data}' adicionada")
         return redirect(url_for('categoria.lista'))
 
-    return render_template('categoria/add.jinja2',
+    return render_template('categoria/add_edit.jinja2',
                            title= 'Nova Categoria',
                            form=form)
+
+
+
+
+
+@bp.route('/edit/<uuid:id_categoria>', methods=['GET', 'POST'])
+@login_required
+def edit(id_categoria):
+    categoria = Categoria.get_by_id(id_categoria)
+    if categoria is None:
+        flash(f"Categoria inexistente", category='warning')
+        return redirect(url_for('categoria.lista'))
+
+    form = EditCategoriaForm(request.values, obj=categoria)
+    if form.validate_on_submit():
+        categoria.nome = form.nome.data
+        db.session.commit()
+        flash("Categoria Alterada", category='success')
+        return redirect(url_for('categoria.lista'))
+
+    return render_template('categoria/add_edit.jinja2',
+                           title="Alterar categoria",
+                           form=form)
+
+@bp.route('/del/<uuid:id_categoria>', methods=['GET', 'POST'])
+@login_required
+def remove(id_categoria):
+    categoria = Categoria.get_by_id(id_categoria)
+    if categoria is None:
+        flash(f"Categoria inexistente", category='warning')
+        return redirect(url_for('categoria.lista'))
+
+    db.session.delete(categoria)
+    db.session.commit()
+    flash("Categoria removida", category='success')
+    return redirect(url_for('categoria.lista'))
+
+
