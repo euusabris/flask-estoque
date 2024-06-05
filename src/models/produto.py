@@ -1,4 +1,9 @@
+import io
 import uuid
+from base64 import b64decode
+
+from PIL import Image
+
 from sqlalchemy import Uuid, String, DECIMAL, ForeignKey, Integer, Boolean, Text
 from sqlalchemy.orm import mapped_column, relationship
 from src.models.base_mixin import TimeStampMixin, BasicRepositoryMixin
@@ -18,3 +23,34 @@ class Produto(db.Model, BasicRepositoryMixin, TimeStampMixin):
     categoria_id = mapped_column(Uuid(as_uuid=True), ForeignKey('categorias.id'))
 
     categoria = relationship('Categoria', back_populates='lista_de_produtos')
+
+    @property
+    def imagem(self):
+        if not self.possui_foto:
+            saida = io.BytesIO()
+            entrada = Image.new('RGB', (480, 480), (128, 128, 128))
+            formato = "PNG"
+            entrada.save(saida, format=formato)
+            conteudo = saida.getvalue()
+            tipo = 'image/pgn'
+        else:
+            conteudo = b64decode(self.foto_base64)
+            tipo = self.foto_mime
+        return conteudo, tipo
+
+    def thumbnail(self, size: int = 128):
+        if not self.possui_foto:
+           ...
+        else:
+            arquivo = io.BytesIO(b64decode(self.foto_base64))
+            saida = io.BytesIO()
+            entrada = Image.open(arquivo)
+            formato = entrada.format
+            (largura, altura) = entrada.size
+            fator = min(size/largura, size/altura)
+            novo_tamanho = (int(largura*fator), int(altura*fator))
+            entrada.thumbnail(novo_tamanho)
+            entrada.save(saida, format=formato)
+            conteudo = saida.getvalue()
+            tipo = self.foto_mime
+        return conteudo, tipo
