@@ -40,7 +40,13 @@ class Produto(db.Model, BasicRepositoryMixin, TimeStampMixin):
 
     def thumbnail(self, size: int = 128):
         if not self.possui_foto:
-           ...
+            saida = io.BytesIO()
+            entrada = Image.new('RGB', (size, size), (128, 128, 128))
+            formato = "PNG"
+            entrada.save(saida, format=formato)
+            conteudo = saida.getvalue()
+            tipo = 'image/pgn'
+
         else:
             arquivo = io.BytesIO(b64decode(self.foto_base64))
             saida = io.BytesIO()

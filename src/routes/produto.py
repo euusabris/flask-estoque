@@ -51,6 +51,16 @@ def add():
     return render_template('produto/add_edit.jinja2', form=form,
                            title="Adicionar novo Produto")
 
+@bp.route('/lista', methods=['GET', 'POST'])
+@bp.route('/', methods=['GET', 'POST'])
+def lista():
+    sentenca = db.select(Produto).order_by(Produto.nome)
+    rset = db.session.execute(sentenca).scalars()
+
+    return render_template('produto/lista.jinja2',
+                           title = 'Lista de Produtos',
+                           rset=rset)
+
 @bp.route('/imagem/<uuid:id_produto>', methods=['GET'])
 def imagem(id_produto):
     produto = Produto.get_by_id(id_produto)
