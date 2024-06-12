@@ -23,14 +23,14 @@ class ProdutoForm(FlaskForm):
                                        NumberRange(min=0,
                                                    message="O estoque devem ser positivo")])
 
-    ativo = BooleanField(label="Ativo?",
-                         validators=[InputRequired(message="É preciso dizer se o produto está ou não ativo")])
+    ativo = BooleanField(label="Ativo?")
+
 
     foto = FileField(label="Foto do produto",
                      validators=[FileAllowed(['jpg', 'png'], message="Apenas arquivos JPG ou PNG")])
 
     categoria = SelectField(label="Categoria do Produto",
-                            validators=[InputRequired(message="Selecione o categoria")])
+                            validators=[DataRequired(message="Selecione o categoria")])
 
     submit = SubmitField()
 
