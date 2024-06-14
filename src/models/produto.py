@@ -45,7 +45,7 @@ class Produto(db.Model, BasicRepositoryMixin, TimeStampMixin):
             formato = "PNG"
             entrada.save(saida, format=formato)
             conteudo = saida.getvalue()
-            tipo = 'image/pgn'
+            tipo = 'image/png'
 
         else:
             arquivo = io.BytesIO(b64decode(self.foto_base64))
@@ -54,9 +54,10 @@ class Produto(db.Model, BasicRepositoryMixin, TimeStampMixin):
             formato = entrada.format
             (largura, altura) = entrada.size
             fator = min(size/largura, size/altura)
-            novo_tamanho = (int(largura*fator), int(altura*fator))
+            novo_tamanho = (int(largura * fator), int(altura * fator))
             entrada.thumbnail(novo_tamanho)
             entrada.save(saida, format=formato)
             conteudo = saida.getvalue()
             tipo = self.foto_mime
         return conteudo, tipo
+
