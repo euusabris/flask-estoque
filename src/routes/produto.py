@@ -2,6 +2,7 @@ from base64 import b64encode
 
 from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, Response
 from flask_login import login_required
+from werkzeug.exceptions import NotFound
 
 from src.forms.produto import ProdutoForm
 from src.models.categoria import Categoria
@@ -93,17 +94,40 @@ def edit(produto_id):
                            produto=produto)
 
 
+@bp.route('/delete/<uuid:produto_id>', methods=['GET'])
+@login_required
+def delete(produto_id):
+    produto = Produto.get_by_id(produto_id)
+    if produto is None:
+        flash("Produto inexistente", category='danger')
+        return redirect(url_for('produto.lista'))
 
+    db.session.delete(produto)
+    db.session.commit()
+    flash("Produto removido!", category='success')
+    return redirect(url_for('produto.lista'))
 
 @bp.route('/lista', methods=['GET', 'POST'])
 @bp.route('/', methods=['GET', 'POST'])
 def lista():
+    page = request.args.get('page', type=int, default=1)
+    pp = request.args.get('pp', type=int, default=25)
+
     sentenca = db.select(Produto).order_by(Produto.nome)
-    rset = db.session.execute(sentenca).scalars()
+
+    try:
+        rset = db.paginate(sentenca, page=page, per_page=pp, error_out=True)
+    except NotFound:
+         flash(f"Não temos produtos na página {page}. Apresentado página 1")
+         page = 1
+         rset = db.paginate(sentenca, page=page, per_page=pp, error_out=False)
+
 
     return render_template('produto/lista.jinja2',
                            title = 'Lista de Produtos',
-                           rset=rset)
+                           rset=rset,
+                           page=page,
+                           pp=pp)
 
 @bp.route('/imagem/<uuid:id_produto>', methods=['GET'])
 def imagem(id_produto):
