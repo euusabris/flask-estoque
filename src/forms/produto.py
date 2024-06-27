@@ -25,6 +25,18 @@ class ProdutoForm(FlaskForm):
 
     ativo = BooleanField(label="Ativo?")
 
+    corredor = IntegerField(label="Corredor",
+                       validators=[InputRequired(message="É obrigatório definir o nome do produto"),
+                                   NumberRange(min=0,
+                                          message="O produto pode ter até 100 caracteres")])
+    estante = IntegerField(label="Estante",
+                       validators=[InputRequired(message="É obrigatório definir o nome do produto"),
+                                   NumberRange(min=0,
+                                          message="O produto pode ter até 100 caracteres")])
+    andar = IntegerField(label="Andar",
+                       validators=[InputRequired(message="É obrigatório definir o nome do produto"),
+                                   NumberRange(min=0,
+                                          message="O produto pode ter até 100 caracteres")])
 
     foto = FileField(label="Foto do produto",
                      validators=[FileAllowed(['jpg', 'png'], message="Apenas arquivos JPG ou PNG")])

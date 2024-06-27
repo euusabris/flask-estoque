@@ -27,7 +27,10 @@ def add():
         produto = Produto(nome = form.nome.data,
                            preco = form.preco.data,
                            ativo = form.ativo.data,
-                           estoque = form.estoque.data)
+                           estoque = form.estoque.data,
+                           corredor = form.corredor.data,
+                           estante=form.estante.data,
+                           andar=form.andar.data)
 
         if form.foto.data:
             produto.possui_foto = True
@@ -69,6 +72,9 @@ def edit(produto_id):
         produto.preco = form.preco.data
         produto.estoque = form.estoque.data
         produto.ativo = form.ativo.data
+        produto.corredor = form.corredor.data
+        produto.estante = form.estante.data
+        produto.andar = form.andar.data
         categoria = Categoria.get_by_id(form.categoria.data)
         if form.removerfoto.data:
             produto.possui = False
@@ -86,7 +92,6 @@ def edit(produto_id):
         db.session.commit()
         flash ("Produto alterado!", category='success')
         return redirect(url_for('produto.lista'))
-
 
     form.categoria.process_data(str(produto.categoria_id))
     return render_template('produto/edit.jinja2', form=form,

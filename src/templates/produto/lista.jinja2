@@ -29,6 +29,9 @@
             <th scope="col">Categoria</th>
             <th scope="col">Estoque</th>
             <th scope="col" class='text-center'>Ativo</th>
+            <th scope="col">Corredor</th>
+            <th scope="col">Estante</th>
+            <th scope="col">Andar</th>
             <th scope="col" class="text-center">Operações</th>
     </tr></thead>
     <tbody>
@@ -38,6 +41,9 @@
             <td>{{ produto.categoria.nome }}</td>
             <td> {{ produto.estoque }}</td>
             <td class="text-center">{% if produto.ativo %}{{ render_icon('check', color='success') }}{% else %}{{ render_icon('x', color='danger') }}{% endif %}</td>
+            <td class="text-start">{{ produto.corredor }}</td>
+            <td class="text-start"> {{ produto.estante }}</td>
+            <td class="text-start"> {{ produto.andar }}</td>
             <td class="text-center">
                 <a href="{{url_for('produto.edit', produto_id = produto.id)}}">{{ render_icon('pencil-square', color='primary', size='1.25em') }}</a>
                 <a href="{{url_for('produto.delete', produto_id=produto.id) }}"
