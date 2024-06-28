@@ -56,6 +56,7 @@ def add():
                            title="Adicionar novo Produto")
 
 @bp.route('/edit/<uuid:produto_id>', methods=['GET', 'POST'])
+@login_required
 def edit(produto_id):
     produto = Produto.get_by_id(produto_id)
     if produto is None:
@@ -77,7 +78,7 @@ def edit(produto_id):
         produto.andar = form.andar.data
         categoria = Categoria.get_by_id(form.categoria.data)
         if form.removerfoto.data:
-            produto.possui = False
+            produto.possui_foto = False
             produto.foto_mime = None
             produto.foto_base64 = None
         elif form.foto.data:
@@ -145,7 +146,7 @@ def imagem(id_produto):
     if produto is None:
         return abort(404)
     conteudo, tipo = produto.imagem
-    return Response(conteudo, mimetype=tipo)
+    return Response(conteudo, tipo)
 
 
 @bp.route('/thumbnail/<uuid:id_produto>/<int:size>', methods=['GET'])
